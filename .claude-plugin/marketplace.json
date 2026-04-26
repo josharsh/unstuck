@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "unstuck",
+  "owner": {
+    "name": "Harsh Joshi",
+    "url": "https://github.com/josharsh"
+  },
+  "metadata": {
+    "description": "Detect fix-break loops in Claude Code sessions. Stops retrying failed approaches, forces structured diagnosis, and suggests genuinely different strategies.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "unstuck",
+      "description": "Loop detection and forced diagnosis for Claude Code. Catches same-file edit spirals, repeated errors, and reverted changes before they waste tokens and time.",
+      "source": "./",
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "loop-detection",
+        "debugging",
+        "diagnosis",
+        "fix-break-loop",
+        "token-efficiency",
+        "developer-experience"
+      ],
+      "skills": [
+        "./skills/unstuck"
+      ]
+    }
+  ]
+}
