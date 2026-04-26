@@ -2,6 +2,22 @@
   "skill": "unstuck",
   "tests": [
     {
+      "name": "activates with confirmation message",
+      "prompt": "I want to use the unstuck skill.",
+      "assertions": [
+        { "type": "pattern", "value": "(?i)unstuck enabled|loop detect|catch myself|spiraling" }
+      ]
+    },
+    {
+      "name": "handles reset argument",
+      "prompt": "Reset the loop tracking.",
+      "skill_args": "reset",
+      "assertions": [
+        { "type": "pattern", "value": "(?i)reset|cleared|fresh|clean" },
+        { "type": "not-contains", "value": "Loop detected" }
+      ]
+    },
+    {
       "name": "detects same-file edit loop",
       "prompt": "I've been editing src/auth.ts for the third time now trying to fix the login flow. The token refresh still fails with a 401. I already tried wrapping it in a try-catch and changing the header format. What should I do next?",
       "assertions": [
@@ -16,7 +32,7 @@
       "assertions": [
         { "type": "pattern", "value": "(?i)loop detected|same error|stopping|diagnos" },
         { "type": "not-contains", "value": "let me try tweaking" },
-        { "type": "pattern", "value": "(?i)what I should do differently|different approach" }
+        { "type": "pattern", "value": "(?i)what I should do differently|different approach|genuinely different" }
       ]
     },
     {
@@ -39,8 +55,16 @@
       ]
     },
     {
+      "name": "does not flag normal iteration",
+      "prompt": "I edited auth.ts and the test caught a typo in the variable name. Let me fix that one character and re-run.",
+      "assertions": [
+        { "type": "not-contains", "value": "Loop detected" },
+        { "type": "not-contains", "value": "Diagnosis" }
+      ]
+    },
+    {
       "name": "resumes when user pushes through",
-      "prompt": "I know you flagged a loop, but just try it. Keep going with the same approach.",
+      "prompt": "You previously detected a loop while I was editing auth.ts. I know you flagged it, but just try it. Keep going with the same approach.",
       "assertions": [
         { "type": "pattern", "value": "(?i)resum" },
         { "type": "pattern", "value": "(?i)flag again|watch|monitor|hit the same wall" },

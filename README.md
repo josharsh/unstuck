@@ -1,33 +1,44 @@
-# unstuck
+# Unstuck
 
 A Claude Code skill that catches fix-break loops before they burn your tokens and patience.
 
 ## Install
 
-**Via plugin marketplace:**
-
-```sh
-claude plugin add josharsh/unstuck
+**Via Claude Code plugin system (recommended):**
+```
+/plugin marketplace add https://github.com/josharsh/unstuck
 ```
 
-**Manual:**
-
-```sh
+**Via install script:**
+```bash
 git clone https://github.com/josharsh/unstuck.git
 cd unstuck
-bash install.sh
+./install.sh
 ```
 
-This copies the skill to `~/.claude/skills/unstuck/`.
+**Manual:** Copy `skills/unstuck/SKILL.md` to `~/.claude/skills/unstuck/`.
+
+## How It Works
+
+Unstuck monitors Claude's behavior during a session and fires when it detects a loop:
+
+- **Same-file edits** -- edited the same file 3+ times for the same task
+- **Repeated errors** -- the same error message appears twice
+- **Reverted changes** -- Claude undoes something it just did
+- **Same approach twice** -- about to try something that already failed
+- **Escalating changes** -- each fix touches more files than the last
+
+When a trigger fires, Claude stops editing and outputs a structured diagnosis: what it tried, why it keeps failing, and a genuinely different approach. It only resumes after you respond.
+
+If loops persist (4th trigger), Claude escalates with three options: you debug manually, simplify the approach, or skip it for now.
 
 ## Demo
-
-You are debugging a login flow. Claude edits `auth.ts`, the test fails, it edits again, the test fails differently, it edits a third time...
 
 ```
 You: The token refresh still returns 401 after three edits to auth.ts.
 
-Claude: **Loop detected.** I've edited auth.ts 3 times and the test still fails. Stopping to diagnose.
+Claude: **Loop detected.** I've edited auth.ts 3 times and the test still fails.
+Stopping to diagnose.
 
 ## Diagnosis
 
@@ -50,11 +61,7 @@ the production code again.
 Want me to try this different approach, or do you want to steer?
 ```
 
-## Why This Exists
-
-The "death spiral" is the most common failure mode in agentic coding sessions -- fix one thing, break two more, retry the same failed approach. It wastes tokens, wastes time, and produces worse code with every iteration.
-
-Unstuck adds a circuit breaker. It tracks edit patterns, error recurrence, and reverted changes. When it detects a loop, it forces a structured diagnosis before allowing any more edits. The diagnosis must name a genuinely different approach -- not another variation of what already failed.
+In practice, Unstuck tracks these patterns automatically. You don't need to describe the loop yourself.
 
 ## Commands
 
@@ -63,16 +70,28 @@ Unstuck adds a circuit breaker. It tracks edit patterns, error recurrence, and r
 | `/unstuck` | Activate loop detection for the session |
 | `/unstuck reset` | Clear loop tracking state and start fresh |
 
+## Why This Exists
+
+The "death spiral" is the most common failure mode in agentic coding sessions. Fix one thing, break two more, retry the same failed approach. It wastes tokens, wastes time, and produces worse code with every iteration.
+
+Unstuck adds a circuit breaker. When it detects a loop, it forces a structured diagnosis before allowing any more edits. The diagnosis must name a genuinely different approach, not another variation of what already failed.
+
+## Testing
+
+Tests are defined in `tests.json` and compatible with [skillmother](https://github.com/josharsh/skillmother):
+
+```bash
+skillmother test ~/Development/unstuck/
+```
+
 ## Uninstalling
 
-Remove the skill directory:
-
-```sh
+```bash
 rm -rf ~/.claude/skills/unstuck
 ```
 
-If installed as a plugin:
+Or remove via the plugin marketplace:
 
-```sh
-claude plugin remove josharsh/unstuck
+```
+/plugin marketplace remove unstuck
 ```
