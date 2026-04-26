@@ -13,9 +13,7 @@ A Claude Code skill that catches fix-break loops before they burn your tokens.
 
 ## Why I Built This
 
-I watched Claude edit `auth.ts` five times in a row. Same file. Same error. Each "fix" was a slight variation of the last one that didn't work. Try-catch, then different try-catch, then the same try-catch with a null check. Twenty minutes and a few dollars of API calls later, the bug was in the test fixture.
-
-This is the death spiral. Claude gets stuck, keeps trying variations of the same broken approach, and never stops to think "wait, maybe I'm looking at the wrong thing." It's the most expensive failure mode in agentic coding because it looks like progress.
+Claude's most expensive failure mode is the one that looks like progress. It edits a file, the test fails, it edits again, fails differently, edits a third time -- each attempt a slight variation of the same broken approach. You burn tokens and time while the actual bug is somewhere it never thought to look.
 
 `/unstuck` adds a circuit breaker. When it detects a loop, Claude has to stop editing and write a structured diagnosis before touching any more code.
 
