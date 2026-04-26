@@ -1,36 +1,23 @@
-# Unstuck
+# unstuck
 
-A Claude Code skill that catches fix-break loops before they burn your tokens and patience.
+A Claude Code skill that catches fix-break loops before they burn your tokens.
 
 ## Install
 
-**Via Claude Code plugin system (recommended):**
+**Plugin marketplace:**
 ```
 /plugin marketplace add https://github.com/josharsh/unstuck
 ```
 
-**Via install script:**
-```bash
-git clone https://github.com/josharsh/unstuck.git
-cd unstuck
-./install.sh
-```
-
 **Manual:** Copy `skills/unstuck/SKILL.md` to `~/.claude/skills/unstuck/`.
 
-## How It Works
+## Why I Built This
 
-Unstuck monitors Claude's behavior during a session and fires when it detects a loop:
+I watched Claude edit `auth.ts` five times in a row. Same file. Same error. Each "fix" was a slight variation of the last one that didn't work. Try-catch, then different try-catch, then the same try-catch with a null check. Twenty minutes and a few dollars of API calls later, the bug was in the test fixture.
 
-- **Same-file edits** -- edited the same file 3+ times for the same task
-- **Repeated errors** -- the same error message appears twice
-- **Reverted changes** -- Claude undoes something it just did
-- **Same approach twice** -- about to try something that already failed
-- **Escalating changes** -- each fix touches more files than the last
+This is the death spiral. Claude gets stuck, keeps trying variations of the same broken approach, and never stops to think "wait, maybe I'm looking at the wrong thing." It's the most expensive failure mode in agentic coding because it looks like progress.
 
-When a trigger fires, Claude stops editing and outputs a structured diagnosis: what it tried, why it keeps failing, and a genuinely different approach. It only resumes after you respond.
-
-If loops persist (4th trigger), Claude escalates with three options: you debug manually, simplify the approach, or skip it for now.
+`/unstuck` adds a circuit breaker. When it detects a loop, Claude has to stop editing and write a structured diagnosis before touching any more code.
 
 ## Demo
 
@@ -61,37 +48,33 @@ the production code again.
 Want me to try this different approach, or do you want to steer?
 ```
 
-In practice, Unstuck tracks these patterns automatically. You don't need to describe the loop yourself.
+## Triggers
+
+- **Same-file edits** -- edited the same file 3+ times for the same task
+- **Repeated errors** -- same error message appears twice
+- **Reverted changes** -- undoes something it just did
+- **Same approach twice** -- about to retry something that already failed
+- **Escalating changes** -- each fix touches more files than the last
+
+If it hits a 4th trigger, it escalates: "I've been going in circles. Here are three options..."
 
 ## Commands
 
 | Command | What it does |
 |---------|-------------|
-| `/unstuck` | Activate loop detection for the session |
-| `/unstuck reset` | Clear loop tracking state and start fresh |
-
-## Why This Exists
-
-The "death spiral" is the most common failure mode in agentic coding sessions. Fix one thing, break two more, retry the same failed approach. It wastes tokens, wastes time, and produces worse code with every iteration.
-
-Unstuck adds a circuit breaker. When it detects a loop, it forces a structured diagnosis before allowing any more edits. The diagnosis must name a genuinely different approach, not another variation of what already failed.
+| `/unstuck` | Activate loop detection |
+| `/unstuck reset` | Clear tracking state |
 
 ## Testing
 
-Tests are defined in `tests.json` and compatible with [skillmother](https://github.com/josharsh/skillmother):
+Tested with [skillmother](https://github.com/josharsh/skillmother):
 
 ```bash
-skillmother test ~/Development/unstuck/
+skillmother test skills/unstuck/
 ```
 
 ## Uninstalling
 
 ```bash
 rm -rf ~/.claude/skills/unstuck
-```
-
-Or remove via the plugin marketplace:
-
-```
-/plugin marketplace remove unstuck
 ```
