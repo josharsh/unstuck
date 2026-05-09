@@ -4,12 +4,19 @@ A Claude Code skill that catches fix-break loops before they burn your tokens.
 
 ## Install
 
-**Plugin marketplace:**
+In Claude Code, run:
+
 ```
-/plugin marketplace add https://github.com/josharsh/unstuck
+/plugin marketplace add josharsh/unstuck
 ```
 
-**Manual:** Copy `skills/unstuck/SKILL.md` to `~/.claude/skills/unstuck/`.
+Or manually:
+
+```bash
+mkdir -p ~/.claude/skills/unstuck
+curl -sL https://raw.githubusercontent.com/josharsh/unstuck/main/skills/unstuck/SKILL.md \
+  -o ~/.claude/skills/unstuck/SKILL.md
+```
 
 ## Why I Built This
 
